@@ -24,7 +24,7 @@ public class LogEntry
     private List<UUID> actionIds;
     @ElementCollection
     @Getter @Setter
-    private Map<Object,Object> details;
+    private Map<String,String> details;
     @Getter @Setter
     private UUID staffId;
     @Getter @Setter

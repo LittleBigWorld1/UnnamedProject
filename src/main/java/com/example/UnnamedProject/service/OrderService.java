@@ -27,7 +27,8 @@ public class OrderService
     }
     public Order update(Order order)
     {
-        if (orderRepo.existsById(order.getId())) return orderRepo.save(order);
+        if (orderRepo.existsById(order.getId()))
+            return orderRepo.save(order);
         return null;
     }
     public void deleteById(UUID id)

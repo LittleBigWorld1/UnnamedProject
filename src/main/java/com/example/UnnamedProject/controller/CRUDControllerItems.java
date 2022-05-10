@@ -9,6 +9,8 @@ import com.example.UnnamedProject.model.things.*;
 import com.example.UnnamedProject.service.LogEntryService;
 import com.example.UnnamedProject.service.items.SmartphoneItemService;
 import com.example.UnnamedProject.service.things.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.xml.bind.v2.TODO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +46,7 @@ public class CRUDControllerItems
                                        @RequestParam(required = false) UUID ramId,
                                        @RequestParam(required = false) UUID driveId,
                                        @RequestParam int price,
-                                       @RequestParam int warrantyMonths)
+                                       @RequestParam int warrantyMonths) throws JsonProcessingException
     {
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
@@ -80,8 +82,8 @@ public class CRUDControllerItems
         logEntry.setStaffId(UUID.randomUUID()); //TODO
         logEntry.setType(LogEntryType.CREATE);
         logEntry.setActionIds(List.of(laptopItem.getId()));
-        Map<Object,Object> details=new HashMap<>();
-        details.put("laptopItem",laptopItem);
+        Map<String,String> details=new HashMap<>();
+        details.put("laptopItem",new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(laptopItem));
         logEntry.setDetails(details);
         logService.save(logEntry);
         return result;
@@ -124,7 +126,7 @@ public class CRUDControllerItems
         logEntry.setStaffId(UUID.randomUUID()); //TODO
         logEntry.setType(LogEntryType.UPDATE);
         logEntry.setActionIds(List.of(id));
-        Map<Object,Object> details=new HashMap<>();
+        Map<String,String> details=new HashMap<>();
         if (laptopItem==null) return result;
         if (laptopId!=null)
         {
@@ -144,32 +146,32 @@ public class CRUDControllerItems
         }
         if (laptopId!=null)
         {
-            details.put("oldLaptopId",laptopItem.getLaptopId());
-            details.put("newLaptopId",laptopId);
+            details.put("oldLaptopId",laptopItem.getLaptopId().toString());
+            details.put("newLaptopId",laptopId.toString());
             laptopItem.setLaptopId(laptopId);
         }
         if (ramId!=null)
         {
-            details.put("oldRamId",laptopItem.getRamId());
-            details.put("newRamId",ramId);
+            details.put("oldRamId",laptopItem.getRamId().toString());
+            details.put("newRamId",ramId.toString());
             laptopItem.setRamId(ramId);
         }
         if (driveId!=null)
         {
-            details.put("oldDriveId",laptopItem.getDriveId());
-            details.put("newDriveId",driveId);
+            details.put("oldDriveId",laptopItem.getDriveId().toString());
+            details.put("newDriveId",driveId.toString());
             laptopItem.setDriveId(driveId);
         }
         if (price!=null)
         {
-            details.put("oldPrice",laptopItem.getPrice());
-            details.put("newPrice",price);
+            details.put("oldPrice",laptopItem.getPrice()+"");
+            details.put("newPrice",price.toString());
             laptopItem.setPrice(price);
         }
         if (warrantyMonths!=null)
         {
-            details.put("oldWarrantyMonths",laptopItem.getWarrantyMonths());
-            details.put("newWarrantyMonths",warrantyMonths);
+            details.put("oldWarrantyMonths",laptopItem.getWarrantyMonths()+"");
+            details.put("newWarrantyMonths",warrantyMonths.toString());
             laptopItem.setWarrantyMonths(warrantyMonths);
         }
         logEntry.setDetails(details);
@@ -183,14 +185,14 @@ public class CRUDControllerItems
     }
     @PostMapping("/laptopItem/delete")
     @ResponseBody
-    public Map<Object,Object> laptopItemDeletePost(@RequestParam UUID id)
+    public Map<Object,Object> laptopItemDeletePost(@RequestParam UUID id) throws JsonProcessingException
     {
         Map<Object,Object> result=new HashMap<>();
         LogEntry logEntry=new LogEntry();
-        Map<Object,Object> details=new HashMap<>();
+        Map<String,String> details=new HashMap<>();
         result.put("result","error");
         if (!laptopItemService.existsById(id)) return result;
-        details.put("laptopItem",laptopItemService.findById(id));
+        details.put("laptopItem",new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(laptopItemService.findById(id)));
         laptopItemService.deleteById(id);
         result=new HashMap<>();
         result.put("result","success");
@@ -211,7 +213,7 @@ public class CRUDControllerItems
     public Map<Object,Object> smartphoneItemCreatePost(@RequestParam UUID smartphoneId,
                                                    @RequestParam(required = false) UUID chargerId,
                                                    @RequestParam int price,
-                                                   @RequestParam int warrantyMonths)
+                                                   @RequestParam int warrantyMonths) throws JsonProcessingException
     {
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
@@ -238,8 +240,8 @@ public class CRUDControllerItems
         logEntry.setStaffId(UUID.randomUUID()); //TODO
         logEntry.setType(LogEntryType.CREATE);
         logEntry.setActionIds(List.of(smartphoneItem.getId()));
-        Map<Object,Object> details=new HashMap<>();
-        details.put("smartphoneItem",smartphoneItem);
+        Map<String,String> details=new HashMap<>();
+        details.put("smartphoneItem",new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(smartphoneItem));
         logEntry.setDetails(details);
         logService.save(logEntry);
         return result;
@@ -278,7 +280,7 @@ public class CRUDControllerItems
         logEntry.setStaffId(UUID.randomUUID()); //TODO
         logEntry.setType(LogEntryType.UPDATE);
         logEntry.setActionIds(List.of(id));
-        Map<Object,Object> details=new HashMap<>();
+        Map<String,String> details=new HashMap<>();
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
         SmartphoneItem smartphoneItem=smartphoneItemService.findById(id);
@@ -295,26 +297,26 @@ public class CRUDControllerItems
         }
         if (smartphoneId!=null)
         {
-            details.put("oldSmartphoneId",smartphoneItem.getSmartphoneId());
-            details.put("newSmartphoneId",smartphoneId);
+            details.put("oldSmartphoneId",smartphoneItem.getSmartphoneId().toString());
+            details.put("newSmartphoneId",smartphoneId.toString());
             smartphoneItem.setSmartphoneId(smartphoneId);
         }
         if (chargerId!=null)
         {
-            details.put("oldChargerId",smartphoneItem.getChargerId());
-            details.put("newChargerId",chargerId);
+            details.put("oldChargerId",smartphoneItem.getChargerId().toString());
+            details.put("newChargerId",chargerId.toString());
             smartphoneItem.setSmartphoneId(smartphoneId);
         }
         if (price!=null)
         {
-            details.put("oldPrice",smartphoneItem.getPrice());
-            details.put("newPrice",price);
+            details.put("oldPrice",smartphoneItem.getPrice()+"");
+            details.put("newPrice",price.toString());
             smartphoneItem.setPrice(price);
         }
         if (warrantyMonths!=null)
         {
-            details.put("oldWarrantyMonths",smartphoneItem.getWarrantyMonths());
-            details.put("newWarrantyMonths",warrantyMonths);
+            details.put("oldWarrantyMonths",smartphoneItem.getWarrantyMonths()+"");
+            details.put("newWarrantyMonths",warrantyMonths.toString());
             smartphoneItem.setWarrantyMonths(warrantyMonths);
         }
         smartphoneItem=smartphoneItemService.update(smartphoneItem);
@@ -328,14 +330,14 @@ public class CRUDControllerItems
     }
     @PostMapping("/smartphoneItem/delete")
     @ResponseBody
-    public Map<Object,Object> smartphoneItemDeletePost(@RequestParam UUID id)
+    public Map<Object,Object> smartphoneItemDeletePost(@RequestParam UUID id) throws JsonProcessingException
     {
         LogEntry logEntry=new LogEntry();
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
         if (!smartphoneItemService.existsById(id)) return result;
-        Map<Object,Object> details=new HashMap<>();
-        details.put("smartphoneItem",smartphoneItemService.findById(id));
+        Map<String,String> details=new HashMap<>();
+        details.put("smartphoneItem",new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(smartphoneItemService.findById(id)));
         smartphoneItemService.deleteById(id);
         result=new HashMap<>();
         result.put("result","success");

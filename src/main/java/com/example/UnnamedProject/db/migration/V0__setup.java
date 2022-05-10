@@ -1,6 +1,6 @@
 package com.example.UnnamedProject.db.migration;
 
-import org.flywaydb.core.api.migration.BaseJavaMigration;
+/*import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import java.sql.Statement;
 
@@ -173,3 +173,4 @@ public class V0__setup extends BaseJavaMigration
                 "\n");
     }
 }
+*/

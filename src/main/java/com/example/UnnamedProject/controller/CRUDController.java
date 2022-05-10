@@ -9,6 +9,8 @@ import com.example.UnnamedProject.model.things.SSD;
 import com.example.UnnamedProject.service.LogEntryService;
 import com.example.UnnamedProject.service.OrderService;
 import com.example.UnnamedProject.service.things.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
@@ -18,6 +20,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @RestController
+@RequestMapping("/crud")
 public class CRUDController
 {
     @Autowired
@@ -39,9 +42,9 @@ public class CRUDController
 
     @PostMapping("/order/create")
     @ResponseBody
-    public Map<Object,Object> orderCreatePost(@RequestParam UUID... itemIds)
+    public Map<Object,Object> orderCreatePost(@RequestParam UUID... itemIds) throws JsonProcessingException
     {
-        List<UUID> list=Arrays.asList(itemIds);
+        List<UUID> list=new ArrayList<>(List.of(itemIds));
         boolean flag=true;
         for (UUID id : list)
         {
@@ -50,6 +53,7 @@ public class CRUDController
              || !smartphoneService.exists(id) || !ssdService.exists(id)) {flag=false; break;}
         }
         Map<Object,Object> result=new HashMap<>();
+        flag=true;//TODO DEBUG
         if (!flag)
         {
             result.put("result","error");
@@ -72,8 +76,8 @@ public class CRUDController
         logEntry.setStaffId(UUID.randomUUID());
         //TODO
         logEntry.setActionIds(List.of(order.getId()));
-        Map<Object,Object> details=new HashMap<>();
-        details.put("order",order);
+        Map<String,String> details=new HashMap<>();
+        details.put("order",new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(order));
         logEntry.setDetails(details);
         logService.save(logEntry);
         return result;
@@ -110,22 +114,22 @@ public class CRUDController
         logEntry.setType(LogEntryType.UPDATE);
         logEntry.setStaffId(UUID.randomUUID());
         //TODO
-        logEntry.setActionIds(List.of(id));
-        Map<Object,Object> details=new HashMap<>();
+        logEntry.setActionIds(new ArrayList<>(List.of(id)));
+        Map<String,String> details=new HashMap<>();
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
         Order order=orderService.findById(id);
         if (order==null) return result;
         if (itemIds!=null)
         {
-            details.put("oldItemIds",order.getItemIds());
-            details.put("newItemIds",itemIds);
-            order.setItemIds(Arrays.asList(itemIds));
+            details.put("oldItemIds",order.getItemIds().toString());
+            details.put("newItemIds",itemIds.toString());
+            order.setItemIds(new ArrayList<>(List.of(itemIds)));
         }
         if (date!=null)
         {
-            details.put("oldDate",order.getItemIds());
-            details.put("newDate",date);
+            details.put("oldDate",order.getItemIds().toString());
+            details.put("newDate",date.toString());
             order.setDate(date);
         }
         order=orderService.update(order);
@@ -139,7 +143,7 @@ public class CRUDController
     }
     @PostMapping("/order/delete")
     @ResponseBody
-    public Map<Object,Object> orderDeletePost(@RequestParam UUID id)
+    public Map<Object,Object> orderDeletePost(@RequestParam UUID id) throws JsonProcessingException
     {
         Map<Object,Object> result=new HashMap<>();
         result.put("result","error");
@@ -152,9 +156,8 @@ public class CRUDController
         logEntry.setDate(System.currentTimeMillis());
         logEntry.setType(LogEntryType.DELETE);
         logEntry.setStaffId(UUID.randomUUID()); //TODO
-        logEntry.setActionIds(List.of(id));
-        Map<Object,Object> details=new HashMap<>();
-        details.put("order",order);
+        logEntry.setActionIds(new ArrayList<>(List.of(id)));
+        Map<String,String> details=new HashMap<>();
         logEntry.setDetails(details);
         logService.save(logEntry);
         return result;
