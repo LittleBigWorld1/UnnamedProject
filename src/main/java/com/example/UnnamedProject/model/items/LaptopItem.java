@@ -1,5 +1,6 @@
 package com.example.UnnamedProject.model.items;
 
+import com.example.UnnamedProject.model.enums.DriveSlotType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -21,7 +22,7 @@ public class LaptopItem
     private UUID laptopId;
     @Nullable
     @Getter @Setter
-    private UUID ramId,hddId;
+    private UUID ramId,driveId;
     @Getter @Setter
     private int price, warrantyMonths;
 }

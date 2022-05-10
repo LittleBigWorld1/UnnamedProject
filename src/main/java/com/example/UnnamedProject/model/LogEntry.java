@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +22,11 @@ public class LogEntry
     @ElementCollection
     @Getter @Setter
     private List<UUID> actionIds;
+    @ElementCollection
+    @Getter @Setter
+    private Map<Object,Object> details;
     @Getter @Setter
     private UUID staffId;
+    @Getter @Setter
+    private Long date;
 }
